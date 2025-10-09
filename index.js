@@ -3,6 +3,7 @@
 
 // Itilize import:
 import trackingRoutes from "./routes/tracking.js";
+import cors from "cors";
 import express from "express";
 
 const app = express();
