@@ -7,6 +7,9 @@ import cors from "cors";
 import mongoose from "mongoose";
 import express from "express";
 import authRoutes from "./routes/auth.js";
+import dotenv from "dotenv";
+
+dotenv.config();  // ← sa pèmèt Node li process.env.MONGO_URI
 
 const app = express();
 app.use(cors());
