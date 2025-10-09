@@ -1,11 +1,9 @@
-require("dotenv").config();
-const express = require("express");
-const mongoose = require("mongoose");
-const cors = require("cors");
-import trackingRoutes from "./routes/tracking.js"; // 👈 ajoute sa
+// Olye de require():
+// const trackingRoutes = require("./routes/tracking");
 
-const authRoutes = require("./routes/auth");
-const trackingRoutes = require("./routes/tracking");
+// Itilize import:
+import trackingRoutes from "./routes/tracking.js";
+import express from "express";
 
 const app = express();
 app.use(cors());
