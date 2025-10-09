@@ -2,6 +2,7 @@ require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
+import trackingRoutes from "./routes/tracking.js"; // 👈 ajoute sa
 
 const authRoutes = require("./routes/auth");
 const trackingRoutes = require("./routes/tracking");
