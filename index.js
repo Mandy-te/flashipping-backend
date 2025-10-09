@@ -6,6 +6,7 @@ import trackingRoutes from "./routes/tracking.js";
 import cors from "cors";
 import mongoose from "mongoose";
 import express from "express";
+import authRoutes from "./routes/auth.js";
 
 const app = express();
 app.use(cors());
