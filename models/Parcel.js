@@ -1,11 +1,16 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
-const ParcelSchema = new mongoose.Schema({
-  trackingNumber: { type: String, unique: true },
-  weight: Number,
-  value: Number,
-  status: { type: String, default: "En attente" },
-  user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-}, { timestamps: true });
+const parcelSchema = new mongoose.Schema({
+  trackingNumber: { type: String, required: true, unique: true },
+  status: { type: String, required: true },
+  location: { type: String, required: true },
+  history: [
+    {
+      location: String,
+      state: String,
+      date: Date,
+    },
+  ],
+});
 
-module.exports = mongoose.model("Parcel", ParcelSchema);
+export default mongoose.model("Parcel", parcelSchema);
