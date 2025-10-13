@@ -1,23 +1,26 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
+import mongoose from "mongoose";
+import authRoutes from "./routes/authRoutes.js";
 
 dotenv.config();
-
 const app = express();
 
-// Middleware
 app.use(cors());
 app.use(express.json());
 
-// Route test pou verifye API a
+mongoose
+  .connect(process.env.MONGO_URI)
+  .then(() => console.log("✅ MongoDB konekte"))
+  .catch((err) => console.error("❌ Erè koneksyon MongoDB:", err));
+
+app.use("/api", authRoutes);
+
 app.get("/", (req, res) => {
-  res.send("🚀 Flashipping backend is running perfectly!");
+  res.send("🚀 Flashipping backend ap mache !");
 });
 
-// Port pou lokal ak production
-const PORT = process.env.PORT || 5000;
-
-app.listen(PORT, () => {
-  console.log(`✅ Server running on port ${PORT}`);
-});
+app.listen(process.env.PORT || 10000, () =>
+  console.log(`⚡ Serveur ap kouri sou port ${process.env.PORT || 10000}`)
+);
