@@ -1,25 +1,23 @@
-// Olye de require():
-// const trackingRoutes = require("./routes/tracking");
-
-// Itilize import:
-import trackingRoutes from "./routes/tracking.js";
-import cors from "cors";
-import mongoose from "mongoose";
 import express from "express";
-import authRoutes from "./routes/auth.js";
+import cors from "cors";
 import dotenv from "dotenv";
 
-dotenv.config();  // ← sa pèmèt Node li process.env.MONGO_URI
+dotenv.config();
 
 const app = express();
+
+// Middleware
 app.use(cors());
 app.use(express.json());
 
-mongoose.connect(process.env.MONGO_URI)
-  .then(() => console.log("MongoDB connecté"))
-  .catch(err => console.log(err));
+// Route test pou verifye API a
+app.get("/", (req, res) => {
+  res.send("🚀 Flashipping backend is running perfectly!");
+});
 
-app.use("/api/auth", authRoutes);
-app.use("/api/tracking", trackingRoutes);
+// Port pou lokal ak production
+const PORT = process.env.PORT || 5000;
 
-app.listen(process.env.PORT || 5000, () => console.log("Server running..."));
+app.listen(PORT, () => {
+  console.log(`✅ Server running on port ${PORT}`);
+});
