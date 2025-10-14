@@ -1,46 +1,52 @@
+// controllers/shipmentController.js
 import Shipment from "../models/Shipment.js";
 import multer from "multer";
 import path from "path";
 
-// Konfigirasyon multer pou sove fichye nan folder "uploads"
+// Konfigirasyon multer pou upload fichye
 const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "uploads/"); // kreye folder sa nan rasin backend si li pa egziste
+  destination: (req, file, cb) => {
+    cb(null, "uploads/"); // ou ka chanje folder lah si ou vle
   },
-  filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1E9);
-    cb(null, uniqueSuffix + path.extname(file.originalname));
+  filename: (req, file, cb) => {
+    const ext = path.extname(file.originalname);
+    cb(null, Date.now() + ext);
   },
 });
-
 export const upload = multer({ storage });
 
-export const addShipment = async (req, res) => {
+// Lis colis pou itilizatè
+export const getShipments = async (req, res) => {
+  const email = req.query.email;
+  if (!email) return res.status(400).json({ error: "Email manke" });
+
   try {
-    const { email, weight, items, tariff } = req.body;
-    const receiptUrl = req.file ? `/uploads/${req.file.filename}` : null;
-
-    const shipment = await Shipment.create({
-      email,
-      weight,
-      items,
-      tariff,
-      receiptUrl,
-      status: "En attente",
-    });
-
-    res.status(201).json({ message: "Pré-alerte créée avec succès!", shipment });
+    const shipments = await Shipment.find({ email }).sort({ createdAt: -1 });
+    res.json({ shipments });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: "Erreur serveur" });
   }
 };
 
-// Lis shipments
-export const getShipments = async (req, res) => {
+// Ajoute nouvo pre-alerte
+export const addShipment = async (req, res) => {
+  const { email, items, tariff, trackingNumber } = req.body;
+
+  if (!email || !items || !trackingNumber) {
+    return res.status(400).json({ error: "Email, Atik ak Tracking Number obligatwa" });
+  }
+
   try {
-    const { email } = req.query;
-    const shipments = await Shipment.find({ email });
-    res.json({ shipments });
+    const newShipment = await Shipment.create({
+      email,
+      items,
+      tariff: tariff || "",
+      trackingNumber,
+      status: "En attente",
+      weight: "", // admin ap mete li pita
+      receipt: req.file ? req.file.filename : "", // si gen fichye upload
+    });
+    res.status(201).json({ message: "Pre-alerte ajoute avèk siksè!", shipment: newShipment });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
