@@ -1,9 +1,9 @@
 import express from "express";
-import { getShipments, addShipment } from "../controllers/shipmentController.js";
+import { addShipment, getShipments, upload } from "../controllers/shipmentController.js";
 
 const router = express.Router();
 
-router.get("/shipments", getShipments);
-router.post("/shipments", addShipment);
+router.get("/", getShipments);
+router.post("/", upload.single("receipt"), addShipment); // upload.single('receipt') pou resevwa imaj
 
 export default router;
