@@ -1,9 +1,13 @@
+// routes/shipmentRoutes.js
 import express from "express";
-import { addShipment, getShipments, upload } from "../controllers/shipmentController.js";
+import { getShipments, addShipment, upload } from "../controllers/shipmentController.js";
 
 const router = express.Router();
 
-router.get("/", getShipments);
-router.post("/", upload.single("receipt"), addShipment); // upload.single('receipt') pou resevwa imaj
+// Lis colis pou itilizatè
+router.get("/shipments", getShipments);
+
+// Ajoute nouvo pre-alerte avèk upload receipt
+router.post("/shipments", upload.single("receipt"), addShipment);
 
 export default router;
