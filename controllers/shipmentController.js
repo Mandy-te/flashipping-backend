@@ -15,14 +15,14 @@ export const getShipments = async (req, res) => {
 
 // Ajoute yon nouvo koli (pre-alerte)
 export const addShipment = async (req, res) => {
-  const { email, weight, items, tariff } = req.body;
-  if (!email || !weight || !items) {
+  const { email, items, tariff } = req.body;
+  if (!email || !items) {
     return res.status(400).json({ error: "Tout chan obligatwa yo dwe ranpli" });
   }
 
   try {
-    const shipment = await Shipment.create({ email, weight, items, tariff });
-    res.status(201).json({ message: "Nouvo koli ajoute avèk siksè", shipment });
+    const shipment = await Shipment.create({ email, items, tariff }); // pa gen weight
+    res.status(201).json({ message: "Pre-alerte voye avèk siksè", shipment });
   } catch (err) {
     res.status(500).json({ error: "Erreur serveur" });
   }
