@@ -20,17 +20,12 @@ export const loginAdmin = async (req, res) => {
       { expiresIn: "7d" }
     );
 
-    res.json({
-      message: "Connexion réussie ✅",
-      user: {
-        id: admin._id,
-        email: admin.email,
-        role: "admin", // ✅ sa frontend ap verifye
-      },
-      token,
+    res.json({ 
+      user: { id: admin._id, email: admin.email, role: "admin" },
+      token 
     });
   } catch (err) {
-    console.error("Erreur login admin:", err);
+    console.error(err);
     res.status(500).json({ error: err.message });
   }
 };
