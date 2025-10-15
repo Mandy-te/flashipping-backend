@@ -3,8 +3,10 @@ import jwt from "jsonwebtoken";
 import User from "../models/User.js";
 import Admin from "../models/Admin.js";
 
-// Middleware pou itilizatè (user)
-export const authMiddleware = async (req, res, next) => {
+// ----------------------------
+// Middleware pou itilizatè
+// ----------------------------
+const authMiddleware = async (req, res, next) => {
   try {
     const token = req.headers.authorization?.split(" ")[1]; // Bearer <token>
     if (!token) return res.status(401).json({ error: "Token manke" });
@@ -21,8 +23,10 @@ export const authMiddleware = async (req, res, next) => {
   }
 };
 
+// ----------------------------
 // Middleware pou admin
-export const adminMiddleware = async (req, res, next) => {
+// ----------------------------
+const adminMiddleware = async (req, res, next) => {
   try {
     const token = req.headers.authorization?.split(" ")[1]; // Bearer <token>
     if (!token) return res.status(401).json({ error: "Token manke" });
@@ -31,10 +35,16 @@ export const adminMiddleware = async (req, res, next) => {
     const admin = await Admin.findById(decoded.id);
     if (!admin) return res.status(401).json({ error: "Admin pa egziste" });
 
-    req.admin = admin; // mete admin nan req pou kontinye
+    req.user = admin; // mete admin nan req.user pou li konsistan
     next();
   } catch (err) {
     console.error("Erreur adminMiddleware:", err);
     res.status(401).json({ error: "Token invalid" });
   }
 };
+
+// Default export pou import san pwoblèm
+export default authMiddleware;
+
+// Named export pou adminMiddleware
+export { adminMiddleware };
