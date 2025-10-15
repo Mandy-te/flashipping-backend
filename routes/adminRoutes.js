@@ -11,8 +11,7 @@ import {
   getAllPreAlerts,
   confirmPreAlert
 } from "../controllers/adminController.js";
-import authMiddleware from "../middleware/authMiddleware.js";
-import adminMiddleware from "../middleware/adminMiddleware.js";
+import authMiddleware, { adminMiddleware } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
@@ -49,8 +48,8 @@ router.post("/login", async (req, res) => {
 });
 
 // ✅ Apre login sèlman, nou pwoteje rès routes yo
-router.use(authMiddleware);
-router.use(adminMiddleware);
+router.use(authMiddleware);   // verifye token user/admin
+router.use(adminMiddleware);  // verifye admin sèlman
 
 // USERS
 router.get("/users", getAllUsers);
