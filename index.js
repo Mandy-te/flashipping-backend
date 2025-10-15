@@ -4,6 +4,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import authRoutes from "./routes/authRoutes.js";
 import shipmentRoutes from "./routes/shipmentRoutes.js";
+import adminRoutes from "./routes/adminRoutes.js"; // ✅ Ajoute adminRoutes
 
 dotenv.config();
 const app = express();
@@ -20,13 +21,15 @@ mongoose
 
 // 🛣 Routes principales
 app.use("/api", authRoutes);
+app.use("/api", shipmentRoutes);
+
+// ✅ Admin routes
+app.use("/api/admin", adminRoutes);
 
 // 🌐 Route test
 app.get("/", (req, res) => {
   res.send("🚀 Flashipping backend ap kouri avèk siksè!");
 });
-
-app.use("/api", shipmentRoutes);
 
 // 🚀 Lanse serveur lan
 const PORT = process.env.PORT || 10000;
