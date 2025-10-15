@@ -15,13 +15,22 @@ export const loginAdmin = async (req, res) => {
     if (!isMatch) return res.status(401).json({ error: "Modpas pa kòrèk" });
 
     const token = jwt.sign(
-      { id: admin._id, email: admin.email },
+      { id: admin._id, email: admin.email, role: "admin" },
       process.env.JWT_SECRET,
       { expiresIn: "7d" }
     );
 
-    res.json({ user: { id: admin._id, email: admin.email }, token });
+    res.json({
+      message: "Connexion réussie ✅",
+      user: {
+        id: admin._id,
+        email: admin.email,
+        role: "admin", // ✅ sa frontend ap verifye
+      },
+      token,
+    });
   } catch (err) {
+    console.error("Erreur login admin:", err);
     res.status(500).json({ error: err.message });
   }
 };
