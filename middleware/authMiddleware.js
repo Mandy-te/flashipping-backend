@@ -44,7 +44,7 @@ const adminMiddleware = async (req, res, next) => {
 };
 
 // Default export pou import san pwoblèm
-export default authMiddleware;
+export default { authMiddleware };
 
 // Named export pou adminMiddleware
 export { adminMiddleware };
