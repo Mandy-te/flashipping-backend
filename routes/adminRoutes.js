@@ -9,9 +9,10 @@ import {
   getAllShipments,
   addShipmentAdmin,
   getAllPreAlerts,
-  confirmPreAlert,
+  confirmPreAlert
 } from "../controllers/adminController.js";
-import { authMiddleware, adminMiddleware } from "../middleware/authMiddleware.js";
+import authMiddleware from "../middleware/authMiddleware.js";
+import adminMiddleware from "../middleware/adminMiddleware.js";
 
 const router = express.Router();
 
@@ -34,7 +35,11 @@ router.post("/login", async (req, res) => {
 
     res.json({
       message: "Connexion réussie ✅",
-      user: { id: admin._id, email: admin.email },
+      user: {
+        id: admin._id,
+        email: admin.email,
+        role: "admin" // ✅ Role admin pou frontend verifye
+      },
       token,
     });
   } catch (err) {
@@ -43,7 +48,7 @@ router.post("/login", async (req, res) => {
   }
 });
 
-// ✅ Tout rès routes admin sèlman
+// ✅ Apre login sèlman, nou pwoteje rès routes yo
 router.use(authMiddleware);
 router.use(adminMiddleware);
 
