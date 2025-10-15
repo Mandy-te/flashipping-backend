@@ -1,3 +1,4 @@
+// routes/adminRoutes.js
 import express from "express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
@@ -8,10 +9,9 @@ import {
   getAllShipments,
   addShipmentAdmin,
   getAllPreAlerts,
-  confirmPreAlert
+  confirmPreAlert,
 } from "../controllers/adminController.js";
-import authMiddleware from "../middleware/authMiddleware.js";
-import adminMiddleware from "../middleware/adminMiddleware.js";
+import { authMiddleware, adminMiddleware } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
@@ -43,7 +43,7 @@ router.post("/login", async (req, res) => {
   }
 });
 
-// ✅ Apre login sèlman, nou pwoteje rès routes yo
+// ✅ Tout rès routes admin sèlman
 router.use(authMiddleware);
 router.use(adminMiddleware);
 
