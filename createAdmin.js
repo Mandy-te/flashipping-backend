@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
 import dotenv from "dotenv";
 import readline from "readline";
-import Admin from "./models/Admin.js"; // asire w ke chemen an kòrèk
+import Admin from "./models/Admin.js"; // asire w chemen an kòrèk
 
 dotenv.config();
 
@@ -21,6 +21,7 @@ const createAdmin = async () => {
     });
     console.log("MongoDB konekte ✅");
 
+    const name = await askQuestion("Antre non admin: ");
     const email = await askQuestion("Antre email admin: ");
     const password = await askQuestion("Antre modpas admin: ");
     rl.close();
@@ -36,12 +37,13 @@ const createAdmin = async () => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const newAdmin = new Admin({
+      name,
       email,
       password: hashedPassword,
     });
 
     await newAdmin.save();
-    console.log(`Admin kreye avèk siksè ✅ (${email})`);
+    console.log(`Admin kreye avèk siksè ✅ (${name} - ${email})`);
     process.exit(0);
   } catch (err) {
     console.error("Erè kreye admin:", err);
