@@ -1,4 +1,3 @@
-// routes/adminRoutes.js
 import express from "express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
@@ -11,11 +10,13 @@ import {
   getAllPreAlerts,
   confirmPreAlert
 } from "../controllers/adminController.js";
-import authMiddleware, { adminMiddleware } from "../middleware/authMiddleware.js";
+import { authMiddleware, adminMiddleware } from "../middleware/authMiddleware.js"; // ✅ named import
 
 const router = express.Router();
 
-// ✅ ROUTE LOGIN ADMIN (san authMiddleware)
+// ------------------
+// LOGIN ADMIN (san middleware)
+// ------------------
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -34,11 +35,7 @@ router.post("/login", async (req, res) => {
 
     res.json({
       message: "Connexion réussie ✅",
-      user: {
-        id: admin._id,
-        email: admin.email,
-        role: "admin" // ✅ Role admin pou frontend verifye
-      },
+      user: { id: admin._id, email: admin.email, role: "admin" },
       token,
     });
   } catch (err) {
@@ -47,9 +44,11 @@ router.post("/login", async (req, res) => {
   }
 });
 
-// ✅ Apre login sèlman, nou pwoteje rès routes yo
-router.use(authMiddleware);   // verifye token user/admin
-router.use(adminMiddleware);  // verifye admin sèlman
+// ------------------
+// Pwoteje rès routes yo ak middleware
+// ------------------
+router.use(authMiddleware);
+router.use(adminMiddleware);
 
 // USERS
 router.get("/users", getAllUsers);
