@@ -1,25 +1,38 @@
-import express from "express";
-import bcrypt from "bcryptjs";
+// middleware/authMiddleware.js
 import jwt from "jsonwebtoken";
+import User from "../models/User.js";
 import Admin from "../models/Admin.js";
-import {
-  getAllUsers,
-  deleteUser,
-  getAllShipments,
-  addShipmentAdmin,
-  getAllPreAlerts,
-  confirmPreAlert
-} from "../controllers/adminController.js";
-import { authMiddleware } from "../middleware/authMiddleware.js";
-import { adminMiddleware } from "../middleware/adminMiddleware.js"; // ✅ note {}
 
-// Route login admin (pa bezwen middleware)
-router.post("/login", async (req, res) => { ... });
+// verifye token itilizatè
+export const authMiddleware = async (req, res, next) => {
+  try {
+    const token = req.headers.authorization?.split(" ")[1];
+    if (!token) return res.status(401).json({ error: "Token manke" });
 
-// Middleware pwoteje rès route
-router.use(authMiddleware);
-router.use(adminMiddleware);
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const user = await User.findById(decoded.id);
+    if (!user) return res.status(401).json({ error: "User pa egziste" });
 
-// USERS
-router.get("/users", getAllUsers);
-...
+    req.user = user;
+    next();
+  } catch (err) {
+    res.status(401).json({ error: "Token invalid" });
+  }
+};
+
+// verifye token admin
+export const adminMiddleware = async (req, res, next) => {
+  try {
+    const token = req.headers.authorization?.split(" ")[1];
+    if (!token) return res.status(401).json({ error: "Token manke" });
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const admin = await Admin.findById(decoded.id);
+    if (!admin) return res.status(401).json({ error: "Admin pa egziste" });
+
+    req.admin = admin;
+    next();
+  } catch (err) {
+    res.status(401).json({ error: "Token invalid" });
+  }
+};
