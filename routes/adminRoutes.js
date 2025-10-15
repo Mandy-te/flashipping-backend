@@ -1,38 +1,67 @@
-// middleware/authMiddleware.js
+// routes/adminRoutes.js
+import express from "express";
+import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import User from "../models/User.js";
 import Admin from "../models/Admin.js";
+import {
+  getAllUsers,
+  deleteUser,
+  getAllShipments,
+  addShipmentAdmin,
+  getAllPreAlerts,
+  confirmPreAlert
+} from "../controllers/adminController.js";
+import { authMiddleware } from "../middleware/authMiddleware.js";
+import { adminMiddleware } from "../middleware/authMiddleware.js"; // adminMiddleware deja export nan authMiddleware
 
-// verifye token itilizatè
-export const authMiddleware = async (req, res, next) => {
+const router = express.Router();
+
+// ✅ ROUTE LOGIN ADMIN (san authMiddleware)
+router.post("/login", async (req, res) => {
   try {
-    const token = req.headers.authorization?.split(" ")[1];
-    if (!token) return res.status(401).json({ error: "Token manke" });
+    const { email, password } = req.body;
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const user = await User.findById(decoded.id);
-    if (!user) return res.status(401).json({ error: "User pa egziste" });
+    const admin = await Admin.findOne({ email });
+    if (!admin) return res.status(400).json({ error: "Admin inexistant" });
 
-    req.user = user;
-    next();
+    const isMatch = await bcrypt.compare(password, admin.password);
+    if (!isMatch) return res.status(401).json({ error: "Mot de passe incorrect" });
+
+    const token = jwt.sign(
+      { id: admin._id, role: "admin" },
+      process.env.JWT_SECRET,
+      { expiresIn: "7d" }
+    );
+
+    res.json({
+      message: "Connexion réussie ✅",
+      user: {
+        id: admin._id,
+        email: admin.email,
+        role: "admin"
+      },
+      token,
+    });
   } catch (err) {
-    res.status(401).json({ error: "Token invalid" });
+    console.error("Erreur login admin:", err);
+    res.status(500).json({ error: "Erreur serveur" });
   }
-};
+});
 
-// verifye token admin
-export const adminMiddleware = async (req, res, next) => {
-  try {
-    const token = req.headers.authorization?.split(" ")[1];
-    if (!token) return res.status(401).json({ error: "Token manke" });
+// ✅ Apre login sèlman, nou pwoteje rès routes yo
+router.use(authMiddleware);   // verifye token itilizatè/admin
+router.use(adminMiddleware);  // verifye se admin
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const admin = await Admin.findById(decoded.id);
-    if (!admin) return res.status(401).json({ error: "Admin pa egziste" });
+// USERS
+router.get("/users", getAllUsers);
+router.delete("/users/:id", deleteUser);
 
-    req.admin = admin;
-    next();
-  } catch (err) {
-    res.status(401).json({ error: "Token invalid" });
-  }
-};
+// SHIPMENTS
+router.get("/shipments", getAllShipments);
+router.post("/shipments", addShipmentAdmin);
+
+// PRE-ALERTS
+router.get("/prealerts", getAllPreAlerts);
+router.patch("/prealerts/:id/confirm", confirmPreAlert);
+
+export default router;
