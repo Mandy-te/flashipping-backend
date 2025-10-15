@@ -1,38 +1,50 @@
 import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
 import dotenv from "dotenv";
-import Admin from "./models/Admin.js";
+import readline from "readline";
+import Admin from "./models/Admin.js"; // asire w ke chemen an kòrèk
 
 dotenv.config();
 
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout
+});
+
+const askQuestion = (query) => new Promise(resolve => rl.question(query, resolve));
+
 const createAdmin = async () => {
   try {
-    await mongoose.connect(process.env.MONGO_URI);
-    console.log("✅ Connecté à MongoDB");
+    await mongoose.connect(process.env.MONGO_URI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
+    console.log("MongoDB konekte ✅");
 
-    const email = "admin@flaship.com";
-    const password = "Admin123!";
-    const existing = await Admin.findOne({ email });
+    const email = await askQuestion("Antre email admin: ");
+    const password = await askQuestion("Antre modpas admin: ");
+    rl.close();
 
-    if (existing) {
-      console.log("⚠️ Admin sa egziste deja:", existing.email);
+    // verifye si admin deja egziste
+    const existingAdmin = await Admin.findOne({ email });
+    if (existingAdmin) {
+      console.log("Admin deja egziste ✅");
       process.exit(0);
     }
 
+    // hash modpas la
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const admin = new Admin({
+    const newAdmin = new Admin({
       email,
       password: hashedPassword,
     });
 
-    await admin.save();
-    console.log("🎉 Admin créé avec succès !");
-    console.log("🪪 Email:", email);
-    console.log("🔑 Mot de passe:", password);
+    await newAdmin.save();
+    console.log(`Admin kreye avèk siksè ✅ (${email})`);
     process.exit(0);
   } catch (err) {
-    console.error("❌ Erreur création admin:", err);
+    console.error("Erè kreye admin:", err);
     process.exit(1);
   }
 };
